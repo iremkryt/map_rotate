@@ -25,11 +25,17 @@ class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+  static const CameraPosition _firstLocate = CameraPosition(
+    target: LatLng(41.206145, 32.659303),
     zoom: 14.4746,
   );
 
+  static final Marker _firstLocateMarker = Marker(
+    markerId: MarkerId('_firstLocate'),
+    infoWindow: InfoWindow(title: 'First location'),
+    icon: BitmapDescriptor.defaultMarker,
+
+  );
   static const CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
       target: LatLng(37.43296265331129, -122.08832357078792),
@@ -40,8 +46,8 @@ class MapSampleState extends State<MapSample> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: _kGooglePlex,
+        mapType: MapType.normal,
+        initialCameraPosition: _firstLocate,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
