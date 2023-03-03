@@ -32,36 +32,48 @@ class MapSampleState extends State<MapSample> {
 
   static final Marker _firstLocateMarker = Marker(
     markerId: MarkerId('_firstLocate'),
-    infoWindow: InfoWindow(title: 'First location'),
+    infoWindow: InfoWindow(title: 'Buradayim'),
     icon: BitmapDescriptor.defaultMarker,
+    position: LatLng(41.206145, 32.659303),
 
   );
-  static const CameraPosition _kLake = CameraPosition(
+  static const CameraPosition _secondLocate = CameraPosition(
       bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
+      target: LatLng(41.218807, 32.659832),
       tilt: 59.440717697143555,
       zoom: 19.151926040649414);
+
+    static final Marker _secondLocateMarker = Marker(
+      markerId: MarkerId('_secondLocate'),
+      infoWindow: InfoWindow(title: 'Güneş Market'),
+      icon: BitmapDescriptor.defaultMarker,
+      position: LatLng(41.218807, 32.659832),
+    );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GoogleMap(
         mapType: MapType.normal,
+        markers: {
+          _firstLocateMarker,
+          _secondLocateMarker,
+          },
         initialCameraPosition: _firstLocate,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: const Text('To the lake!'),
-        icon: const Icon(Icons.directions_boat),
+        onPressed: _goToTheMarket,
+        label: const Text('Market'),
+        icon: const Icon(Icons.shopping_basket),
       ),
     );
   }
 
-  Future<void> _goToTheLake() async {
+  Future<void> _goToTheMarket() async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+    controller.animateCamera(CameraUpdate.newCameraPosition(_secondLocate));
   }
 }
