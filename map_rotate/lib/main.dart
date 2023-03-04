@@ -24,6 +24,7 @@ class MapSample extends StatefulWidget {
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
+  TextEditingController _searchController = TextEditingController();
 
   static const CameraPosition _firstLocate = CameraPosition(
     target: LatLng(41.206145, 32.659303),
@@ -74,34 +75,46 @@ class MapSampleState extends State<MapSample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Rota Oluşturma'),),
+      appBar: AppBar(
+        title: Text('Rota Oluşturma'),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
-          Row(//11.33de kaldımmm
+          Row(
             children: [
-              Expanded(child: TextFormField()),
+              Expanded(child: TextFormField(
+                controller: _searchController,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(hintText: 'Search by city'),
+                onChanged: (value) {
+                  print(value);
+                },
+              ),),
               IconButton(
                 onPressed: () {}, 
                 icon: Icon(Icons.search),
               ),
             ],
           ),
-          GoogleMap(
-            mapType: MapType.normal,
-            markers: {
-              _firstLocateMarker,
-              // _secondLocateMarker,
-            },
-              // polylines: {
-              //   _rotationPolyLine,
-              // },
-              // polygons: {
-              //   _rotationPolygon,
-              // },
-            initialCameraPosition: _firstLocate,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
+          Expanded(
+            child: GoogleMap(
+              mapType: MapType.normal,
+              markers: {
+                _firstLocateMarker,
+                // _secondLocateMarker,
+              },
+                // polylines: {
+                //   _rotationPolyLine,
+                // },
+                // polygons: {
+                //   _rotationPolygon,
+                // },
+              initialCameraPosition: _firstLocate,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+            ),
           ),
         ],
       ),
