@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:map_rotate/location_service.dart';
 
 void main() => runApp(MyApp());
 
@@ -92,7 +93,10 @@ class MapSampleState extends State<MapSample> {
                 },
               ),),
               IconButton(
-                onPressed: () {}, 
+                onPressed: () async {
+                  var place = await LocationService().getPlace(_searchController.text);
+                  _goToThePlace(place);
+                }, 
                 icon: Icon(Icons.search),
               ),
             ],
@@ -124,6 +128,18 @@ class MapSampleState extends State<MapSample> {
       //   icon: const Icon(Icons.shopping_basket),
       // ),
     );
+  }
+
+  Future<void> _goToThePlace(Map<String, dynamic> place) async {
+    final double lat = place['geometry']['location']['lat'];
+    final double lng = place['geometry']['location']['lng'];
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        target: LatLng(lat, lng),
+        zoom: 12,
+      ),
+    ),);
   }
 
   Future<void> _goToTheMarket() async {
