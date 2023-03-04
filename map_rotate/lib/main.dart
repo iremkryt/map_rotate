@@ -46,29 +46,70 @@ class MapSampleState extends State<MapSample> {
     static final Marker _secondLocateMarker = Marker(
       markerId: MarkerId('_secondLocate'),
       infoWindow: InfoWindow(title: 'Güneş Market'),
-      icon: BitmapDescriptor.defaultMarker,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
       position: LatLng(41.218807, 32.659832),
     );
+
+  static final Polyline _rotationPolyLine = Polyline(
+    polylineId: PolylineId('_rotationPolyLine'),
+    points: [
+      LatLng(41.206145, 32.659303),
+      LatLng(41.218807, 32.659832),
+    ],
+    width: 5,
+  );
+
+  static final Polygon _rotationPolygon = Polygon(
+    polygonId: PolygonId('_rotationPolygon'),
+    points: [
+      LatLng(41.206145, 32.659303),
+      LatLng(41.218807, 32.659832),
+      LatLng(41.200, 32.650),
+      LatLng(41.205, 32.650),
+    ],
+    strokeWidth: 5,
+    fillColor: Colors.transparent,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        markers: {
-          _firstLocateMarker,
-          _secondLocateMarker,
-          },
-        initialCameraPosition: _firstLocate,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
+      appBar: AppBar(title: Text('Rota Oluşturma'),),
+      body: Column(
+        children: [
+          Row(//11.33de kaldımmm
+            children: [
+              Expanded(child: TextFormField()),
+              IconButton(
+                onPressed: () {}, 
+                icon: Icon(Icons.search),
+              ),
+            ],
+          ),
+          GoogleMap(
+            mapType: MapType.normal,
+            markers: {
+              _firstLocateMarker,
+              // _secondLocateMarker,
+            },
+              // polylines: {
+              //   _rotationPolyLine,
+              // },
+              // polygons: {
+              //   _rotationPolygon,
+              // },
+            initialCameraPosition: _firstLocate,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+            },
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheMarket,
-        label: const Text('Market'),
-        icon: const Icon(Icons.shopping_basket),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: _goToTheMarket,
+      //   label: const Text('Market'),
+      //   icon: const Icon(Icons.shopping_basket),
+      // ),
     );
   }
 
