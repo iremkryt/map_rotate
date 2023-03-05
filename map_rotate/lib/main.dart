@@ -27,51 +27,31 @@ class MapSampleState extends State<MapSample> {
       Completer<GoogleMapController>();
   TextEditingController _searchController = TextEditingController();
 
+  Set<Marker> _markers = Set<Marker>();
+  Set<Polygon> _polygons = Set<Polygon>();
+  List<LatLng> polygonLatLngs = <LatLng>[];
+
+  int _polygonIdCounter = 1;
+
   static const CameraPosition _firstLocate = CameraPosition(
     target: LatLng(41.206145, 32.659303),
     zoom: 14.4746,
   );
 
-  static final Marker _firstLocateMarker = Marker(
-    markerId: MarkerId('_firstLocate'),
-    infoWindow: InfoWindow(title: 'Buradayim'),
-    icon: BitmapDescriptor.defaultMarker,
-    position: LatLng(41.206145, 32.659303),
+  @override
+  void initState() {
+    super.initState();
 
-  );
-  static const CameraPosition _secondLocate = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(41.218807, 32.659832),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+    _setMarker(LatLng(41.206145, 32.659303));
+  }
 
-    static final Marker _secondLocateMarker = Marker(
-      markerId: MarkerId('_secondLocate'),
-      infoWindow: InfoWindow(title: 'Güneş Market'),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-      position: LatLng(41.218807, 32.659832),
-    );
-
-  static final Polyline _rotationPolyLine = Polyline(
-    polylineId: PolylineId('_rotationPolyLine'),
-    points: [
-      LatLng(41.206145, 32.659303),
-      LatLng(41.218807, 32.659832),
-    ],
-    width: 5,
-  );
-
-  static final Polygon _rotationPolygon = Polygon(
-    polygonId: PolygonId('_rotationPolygon'),
-    points: [
-      LatLng(41.206145, 32.659303),
-      LatLng(41.218807, 32.659832),
-      LatLng(41.200, 32.650),
-      LatLng(41.205, 32.650),
-    ],
-    strokeWidth: 5,
-    fillColor: Colors.transparent,
-  );
+  void _setMarker(LatLng point) {
+    setState(() {
+      _markers.add(
+        Marker(markerId: MarkerId('marker'), position: point),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,16 +84,8 @@ class MapSampleState extends State<MapSample> {
           Expanded(
             child: GoogleMap(
               mapType: MapType.normal,
-              markers: {
-                _firstLocateMarker,
-                // _secondLocateMarker,
-              },
-                // polylines: {
-                //   _rotationPolyLine,
-                // },
-                // polygons: {
-                //   _rotationPolygon,
-                // },
+              markers: _markers,
+              polygons: _polygons,
               initialCameraPosition: _firstLocate,
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
@@ -140,10 +112,5 @@ class MapSampleState extends State<MapSample> {
         zoom: 12,
       ),
     ),);
-  }
-
-  Future<void> _goToTheMarket() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_secondLocate));
   }
 }
