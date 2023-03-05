@@ -25,7 +25,8 @@ class MapSample extends StatefulWidget {
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-  TextEditingController _searchController = TextEditingController();
+  TextEditingController _originController = TextEditingController();
+  TextEditingController _destinationController = TextEditingController();
 
   Set<Marker> _markers = Set<Marker>();
   Set<Polygon> _polygons = Set<Polygon>();
@@ -78,21 +79,39 @@ class MapSampleState extends State<MapSample> {
         children: [
           Row(
             children: [
-              Expanded(child: TextFormField(
-                controller: _searchController,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(hintText: 'Search by city'),
-                onChanged: (value) {
-                  print(value);
-                },
-              ),),
-              IconButton(
-                onPressed: () async {
-                  var place = await LocationService().getPlace(_searchController.text);
-                  _goToThePlace(place);
-                }, 
-                icon: Icon(Icons.search),
+              Expanded(
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _originController,
+                      decoration: InputDecoration(hintText: 'Origin'),
+                      onChanged: (value) {
+                        print(value);
+                      },
+                    ),
+                    TextFormField(
+                      controller: _destinationController,
+                      decoration: InputDecoration(hintText: 'Destination'),
+                      onChanged: (value) {
+                        print(value);
+                      },
+                    ),
+                  ],
+                ),
               ),
+              IconButton(
+                 onPressed: () async {
+                  var directions = await LocationService().getDirections(
+                    _originController.text, 
+                    _destinationController.text
+                  );
+                  _goToThePlace(
+                    directions['start_location']['lat'],
+                    directions['start_location']['lng'],
+                  );
+                 }, 
+                 icon: Icon(Icons.search),
+               ),
             ],
           ),
           Expanded(
@@ -122,9 +141,13 @@ class MapSampleState extends State<MapSample> {
     );
   }
 
-  Future<void> _goToThePlace(Map<String, dynamic> place) async {
-    final double lat = place['geometry']['location']['lat'];
-    final double lng = place['geometry']['location']['lng'];
+  Future<void> _goToThePlace(
+    //Map<String, dynamic> place
+    double lat,
+    double lng,
+    ) async {
+    //final double lat = place['geometry']['location']['lat'];
+    //final double lng = place['geometry']['location']['lng'];
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
