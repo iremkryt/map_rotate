@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_rotate/location_service.dart';
 
@@ -30,9 +31,11 @@ class MapSampleState extends State<MapSample> {
 
   Set<Marker> _markers = Set<Marker>();
   Set<Polygon> _polygons = Set<Polygon>();
+  Set<Polyline> _polylines = Set<Polyline>();
   List<LatLng> polygonLatLngs = <LatLng>[];
 
   int _polygonIdCounter = 1;
+  int _polylineIdCounter = 1;
 
   static const CameraPosition _firstLocate = CameraPosition(
     target: LatLng(41.206145, 32.659303),
@@ -68,6 +71,24 @@ class MapSampleState extends State<MapSample> {
     );
   }
 
+  void _setPolyline(List<PointLatLng> points) {
+    final String polygonIdVal = 'polyline_$_polygonIdCounter';
+    _polylineIdCounter;
+
+    _polylines.add(
+      Polyline(
+        polylineId: PolylineId(polygonIdVal),
+        width: 2,
+        color: Colors.orange,
+        points: points
+        .map(
+          (point) => LatLng(point.latitude, point.longitude),
+        )
+        toList(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,14 +105,14 @@ class MapSampleState extends State<MapSample> {
                   children: [
                     TextFormField(
                       controller: _originController,
-                      decoration: InputDecoration(hintText: 'Origin'),
+                      decoration: InputDecoration(hintText: 'Nereden'),
                       onChanged: (value) {
                         print(value);
                       },
                     ),
                     TextFormField(
                       controller: _destinationController,
-                      decoration: InputDecoration(hintText: 'Destination'),
+                      decoration: InputDecoration(hintText: 'Nereye'),
                       onChanged: (value) {
                         print(value);
                       },
@@ -108,7 +129,10 @@ class MapSampleState extends State<MapSample> {
                   _goToThePlace(
                     directions['start_location']['lat'],
                     directions['start_location']['lng'],
+                    directions['bound_ne'],
+                    directions['bound_sw'],
                   );
+                  _setPolyline(directions['polyline_decoded']);
                  }, 
                  icon: Icon(Icons.search),
                ),
@@ -119,6 +143,7 @@ class MapSampleState extends State<MapSample> {
               mapType: MapType.normal,
               markers: _markers,
               polygons: _polygons,
+              polylines: _polylines,
               initialCameraPosition: _firstLocate,
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
@@ -145,6 +170,8 @@ class MapSampleState extends State<MapSample> {
     //Map<String, dynamic> place
     double lat,
     double lng,
+    Map<String, dynamic> boundNe,
+    Map<String, dynamic> boundSw,
     ) async {
     //final double lat = place['geometry']['location']['lat'];
     //final double lng = place['geometry']['location']['lng'];
@@ -155,6 +182,14 @@ class MapSampleState extends State<MapSample> {
         zoom: 12,
       ),
     ),);
+
+    controller.animateCamera(CameraUpdate.newLatLngBounds(
+      LatLngBounds(
+        southwest: LatLng(boundSw['lat'], boundSw['lng']), 
+        northeast: LatLng(boundNe['lat'], boundNe['lng']),
+      ), 
+      25),
+    );
 
     _setMarker(LatLng(lat, lng));
   }
