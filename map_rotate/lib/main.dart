@@ -53,6 +53,20 @@ class MapSampleState extends State<MapSample> {
     });
   }
 
+  void _setPolygon(){
+    final String polygonIdVal = 'polygon_$_polygonIdCounter';
+    _polygonIdCounter++;
+
+    _polygons.add(
+      Polygon(
+        polygonId: PolygonId(polygonIdVal),
+        points: polygonLatLngs,
+        strokeWidth: 2,
+        fillColor: Colors.transparent,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,6 +104,12 @@ class MapSampleState extends State<MapSample> {
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
+              onTap: (point) {
+                setState(() {
+                  polygonLatLngs.add(point);
+                  _setPolygon();
+                });
+              },
             ),
           ),
         ],
@@ -112,5 +132,7 @@ class MapSampleState extends State<MapSample> {
         zoom: 12,
       ),
     ),);
+
+    _setMarker(LatLng(lat, lng));
   }
 }
