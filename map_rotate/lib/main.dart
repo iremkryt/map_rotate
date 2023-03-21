@@ -73,18 +73,17 @@ class MapSampleState extends State<MapSample> {
 
   void _setPolyline(List<PointLatLng> points) {
     final String polygonIdVal = 'polyline_$_polygonIdCounter';
-    _polylineIdCounter;
+    _polylineIdCounter++;
 
     _polylines.add(
       Polyline(
         polylineId: PolylineId(polygonIdVal),
         width: 2,
         color: Colors.orange,
-        points: points
-        .map(
+        points: points.map(
           (point) => LatLng(point.latitude, point.longitude),
         )
-        toList(),
+        .toList(),
       ),
     );
   }
